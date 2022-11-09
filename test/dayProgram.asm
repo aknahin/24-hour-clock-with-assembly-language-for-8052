@@ -51,12 +51,12 @@ l1:		MOV A, 41h
 		ACALL 	DELAY	
 		CLR 	A
 		MOVC 	A,@A+DPTR
-		mov r0,dpl
-		inc r0
+		mov 32h,dpl
+		inc 32h
 		jz FINISH
 		LCALL 	DISPLAY
 		LCALL 	DELAY
-		mov dpl,r0
+		mov dpl,32h
 		inc 41h
 		djnz 40h,l1
 		
