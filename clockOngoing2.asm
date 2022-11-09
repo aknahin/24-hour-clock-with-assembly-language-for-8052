@@ -186,7 +186,7 @@ sec2:
 		jz secFINISH_3
 		
 		LCALL 	DISPLAY
-		LCALL 	DELAY	;call another delay here like delaysec and calculate this delay to make it 1 sec... and primary code will be done
+		LCALL 	DELAYsec	;call another delay here like delaysec and calculate this delay to make it 1 sec... and primary code will be done
 		inc r7
 		mov dpl,r7
 		ljmp sec2
@@ -245,12 +245,24 @@ WAIT:
 		JB 	P2.7, WAIT
    		RET
 DELAY:		 
-		MOV 	R5, #1
+		MOV 	R5, #50
+AGAIN_21: 	
+		MOV 	R4, #100
+AGAIN11: 		
+		DJNZ 	R4, AGAIN11
+		DJNZ R5, AGAIN_21
+		RET
+		
+DELAYsec:		
+		mov 45h, #10
+AGAIN_3: 
+		MOV 	R5, #200
 AGAIN_2: 	
-		MOV 	R4, #1
+		MOV 	R4, #230
 AGAIN: 		
 		DJNZ 	R4, AGAIN
 		DJNZ R5, AGAIN_2
+		djnz 45h,AGAIN_3
 		RET
 		
 MSG_1: 		
