@@ -84,11 +84,10 @@ MATCH: 	CLR A
 	ACALL DELAY
 	;LJMP K1
 ON_AC: 	
-	mov @r0,a
-	add a,#30h
+	mov @r0,a	;stores keyboard input ar location of @r0 like 50,51...
+	add a,#30h	;shows ascii
 	ACALL DISPLAY
-	ACALL DELAY
-	
+	ACALL DELAY	;display keyboard input
 	inc r0
 	cjne r0, #56h, keyboard
 	;LJMP K1
