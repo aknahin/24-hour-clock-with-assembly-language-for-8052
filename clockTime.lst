@@ -1,0 +1,624 @@
+
+ASEM-51 V1.3                                         Copyright (c) 2002 by W.W. Heinz                                         PAGE 1
+
+
+
+
+
+       MCS-51 Family Macro Assembler   A S E M - 5 1   V 1.3
+       =====================================================
+
+
+
+	Source File:	C:\AK Nahin\Academic Resources\24 hour clock with assembly language for 8052\Exam1\clockTime.asm
+	Object File:	C:\AK Nahin\Academic Resources\24 hour clock with assembly language for 8052\Exam1\clockTime.hex
+	List File:	C:\AK Nahin\Academic Resources\24 hour clock with assembly language for 8052\Exam1\clockTime.lst
+
+
+
+ Line  I  Addr  Code            Source
+
+    1:		N      0000	ORG 	00H
+    2:	  0000	75 81 70	MOV	SP, #70H
+    3:	  0003	75 D0 00	MOV 	PSW, #00H
+    4:		B      00A5	RS	EQU P2.5
+    5:		B      00A6	RW 	EQU P2.6
+    6:		B      00A7	ENBL	EQU P2.7
+    7:
+    8:	  0006	74 38				MOV	A, #38H			;init. LCD 2 lines, 5x7 matrix
+    9:	  0008	12 02 08			LCALL	COMMAND		;call command subroutine
+   10:	  000B	12 02 39			LCALL DELAY			;give LCD some time
+   11:	  000E	74 0E				MOV 	A, #0EH			;dispplay on, cursor on
+   12:	  0010	12 02 08			LCALL	COMMAND		;call command subroutine
+   13:	  0013	12 02 39			LCALL 	DELAY			;give LCD some time
+   14:	  0016	74 01				MOV	A, #01			;clear LCD
+   15:	  0018	12 02 08			LCALL	COMMAND		;call command subroutine
+   16:	  001B	12 02 39			LCALL 	DELAY			;give LCD some time
+   17:	  001E	74 06				MOV	A, #06H			;shift cursor right
+   18:	  0020	12 02 08			LCALL	COMMAND		;call command subroutine
+   19:	  0023	12 02 39			LCALL 	DELAY			;give LCD some time
+   20:	  0026	74 82				MOV	A, #82H			;cursor at line 1 postion 1
+   21:	  0028	12 02 08			LCALL	COMMAND		;call command subroutine
+   22:	  002B	12 02 39			LCALL DELAY			;give LCD some time
+   23:	  002E	51 39				ACALL 	DELAY
+   24:
+   25:	  0030	78 50		mov r0,#50h
+   26:	  0032	7C 02		mov r4,#2
+   27:				; Keyboard   function
+   28:	  0034			keyboard:
+   29:	  0034	74 0F			MOV A,#0FH
+   30:	  0036	F5 B0			MOV P3,A
+   31:	  0038	75 B0 0F	K1: 	MOV P3,#00001111B
+   32:	  003B	E5 B0			MOV A,P3
+   33:	  003D	54 0F			ANL A,#00001111B
+   34:	  003F	B4 0F F6		CJNE A,#00001111B,K1
+   35:
+   36:	  0042	51 39		K2: 	ACALL DELAY
+   37:	  0044	E5 B0			MOV A,P3
+   38:	  0046	54 0F			ANL A,#00001111B
+   39:	  0048	B4 0F 02		CJNE A,#00001111B,OVER
+   40:	  004B	80 F5			SJMP K2
+   41:
+   42:	  004D	51 39		OVER: ACALL DELAY
+   43:	  004F	E5 B0			MOV A,P3
+
+ASEM-51 V1.3                                         Copyright (c) 2002 by W.W. Heinz                                         PAGE 2
+
+
+
+ Line  I  Addr  Code            Source
+
+   44:	  0051	54 0F			ANL A,#00001111B
+   45:	  0053	B4 0F 02		CJNE A,#00001111B,OVER1
+   46:	  0056	80 EA			SJMP K2
+   47:
+   48:	  0058	75 B0 EF	OVER1: 	MOV P3,#11101111B
+   49:	  005B	E5 B0			MOV A,P3
+   50:	  005D	54 0F			ANL A,#00001111B
+   51:	  005F	B4 0F 1E		CJNE A,#00001111B,ROW_0
+   52:	  0062	75 B0 DF		MOV P3,#11011111B
+   53:	  0065	E5 B0			MOV A,P3
+   54:	  0067	54 0F			ANL A,#00001111B
+   55:	  0069	B4 0F 19		CJNE A,#00001111B,ROW_1
+   56:	  006C	75 B0 7F		MOV P3,#01111111B
+   57:	  006F	E5 B0			MOV A,P3
+   58:	  0071	54 0F			ANL A,#00001111B
+   59:	  0073	B4 0F 14		CJNE A,#00001111B,ROW_2
+   60:	  0076	75 B0 BF		MOV P3,#10111111B
+   61:	  0079	E5 B0			MOV A,P3
+   62:	  007B	54 0F			ANL A,#00001111B
+   63:	  007D	B4 0F 0F		CJNE A,#00001111B,ROW_3
+   64:					;LJMP K2
+   65:
+   66:	  0080	90 02 89	ROW_0: 	MOV DPTR,#KCODE0
+   67:	  0083	80 0D			SJMP FIND
+   68:	  0085	90 02 85	ROW_1: 	MOV DPTR,#KCODE1
+   69:	  0088	80 08			SJMP FIND
+   70:	  008A	90 02 8D	ROW_2: 	MOV DPTR,#KCODE2
+   71:	  008D	80 03			SJMP FIND
+   72:	  008F	90 02 81	ROW_3: 	MOV DPTR,#KCODE3
+   73:
+   74:	  0092	13		FIND: 	RRC A
+   75:	  0093	50 03			JNC MATCH
+   76:	  0095	A3			INC DPTR
+   77:	  0096	80 FA			SJMP FIND
+   78:
+   79:	  0098	E4		MATCH: 	CLR A
+   80:	  0099	93			MOVC A,@A+DPTR
+   81:	  009A	B4 99 06		CJNE A, #99H, ON_AC
+   82:	  009D	74 01			MOV A,#01
+   83:	  009F	51 08			ACALL COMMAND
+   84:	  00A1	51 39			ACALL DELAY
+   85:					;LJMP K1
+   86:	  00A3			ON_AC:
+   87:	  00A3	F6			mov @r0,a
+   88:	  00A4	24 30			add a,#30h
+   89:	  00A6	51 18			ACALL DISPLAY
+   90:	  00A8	51 39			ACALL DELAY
+   91:
+   92:	  00AA	08			inc r0
+   93:	  00AB	B8 56 86		cjne r0, #56h, keyboard
+   94:					;LJMP K1
+   95:	  00AE	A8 50		mov r0,50h	;h1
+   96:	  00B0	A9 51		mov r1,51h	;h0
+   97:	  00B2	AA 52		mov r2,52h	;m1
+   98:	  00B4	AB 53		mov r3,53h	;m0
+   99:	  00B6	AE 54		mov r6,54h	;s1
+
+ASEM-51 V1.3                                         Copyright (c) 2002 by W.W. Heinz                                         PAGE 3
+
+
+
+ Line  I  Addr  Code            Source
+
+  100:	  00B8	AF 55		mov r7,55h	;s0
+  101:
+  102:	  00BA	7C 00		mov r4,#0h
+  103:	  00BC	7D 00		mov r5,#0h
+  104:	  00BE	75 32 00	mov 32h,#0h
+  105:	  00C1	D2 A0		setb p2.0
+  106:
+  107:
+  108:	  00C3	74 84				MOV A, #084H
+  109:	  00C5	51 08				ACALL 	COMMAND
+  110:	  00C7	51 39				ACALL 	DELAY
+  111:	  00C9	E4				CLR 	A
+  112:	  00CA	74 3A				MOV	A,#3ah
+  113:	  00CC	12 02 18			LCALL 	DISPLAY
+  114:	  00CF	12 02 39			LCALL 	DELAY
+  115:
+  116:	  00D2	74 87				MOV A, #087H
+  117:	  00D4	51 08				ACALL 	COMMAND
+  118:	  00D6	51 39				ACALL 	DELAY
+  119:	  00D8	E4				CLR 	A
+  120:	  00D9	74 3A				MOV	A,#3ah
+  121:	  00DB	12 02 18			LCALL 	DISPLAY
+  122:	  00DE	12 02 39			LCALL 	DELAY
+  123:	  00E1	90 02 6B			MOV DPTR, #day
+  124:	  00E4	85 82 43			mov 43h, dpl
+  125:	  00E7	85 82 32			mov 32h,dpl
+  126:						; day as extra feature
+  127:	  00EA	90 02 6B			MOV DPTR, #day
+  128:	  00ED	75 41 C2			mov 41h,#0c2H
+  129:	  00F0	75 40 03			mov 40h,#3
+  130:	  00F3	E5 41		l12:		MOV A, 41h
+  131:	  00F5	85 32 82			mov dpl,32h
+  132:	  00F8	51 08				ACALL 	COMMAND
+  133:	  00FA	51 39				ACALL 	DELAY
+  134:	  00FC	E4				CLR 	A
+  135:	  00FD	93				MOVC 	A,@A+DPTR
+  136:	  00FE	85 82 32			mov 32h,dpl
+  137:	  0101	05 32				inc 32h
+  138:	  0103	60 63				jz dayFINISH
+  139:	  0105	12 02 18			LCALL 	DISPLAY
+  140:	  0108	12 02 39			LCALL 	DELAY
+  141:	  010B	05 41				inc 41h
+  142:	  010D	D5 40 E3			djnz 40h,l12
+  143:
+  144:	  0110			start:
+  145:	  0110	90 02 51	LOOP_1: 	MOV DPTR, #MSG_1
+  146:	  0113	74 82				MOV A, #082H
+  147:	  0115	51 08				ACALL 	COMMAND
+  148:	  0117	51 39				ACALL 	DELAY
+  149:
+  150:	  0119	E4				CLR 	A
+  151:	  011A	E8				mov a, r0
+  152:	  011B	93				MOVC 	A,@A+DPTR
+  153:	  011C	F5 30				mov 30h,a
+  154:						;mov r0,dpl
+  155:	  011E	60 5E				jz FINISH_12
+
+ASEM-51 V1.3                                         Copyright (c) 2002 by W.W. Heinz                                         PAGE 4
+
+
+
+ Line  I  Addr  Code            Source
+
+  156:	  0120	12 02 18			LCALL 	DISPLAY
+  157:	  0123	12 02 39			LCALL 	DELAY
+  158:	  0126	08				inc r0
+  159:
+  160:
+  161:
+  162:
+  163:	  0127	90 02 55	LOOP_2: 	mov dptr, #MSG_2
+  164:	  012A	74 83				MOV A, #083H
+  165:	  012C	51 08				ACALL 	COMMAND
+  166:	  012E	51 39				ACALL 	DELAY
+  167:	  0130	E4				CLR 	A
+  168:	  0131	E9				mov a, r1
+  169:	  0132	93				MOVC 	A,@A+DPTR
+  170:						;mov r1,dpl
+  171:	  0133	60 67				jz FINISH_21
+  172:	  0135	F5 31				mov 31h,a
+  173:	  0137	B4 34 33			cjne a,#34h,check_four
+  174:	  013A	E5 30				mov a,30h
+  175:	  013C	B4 32 2E			cjne a,#32h,check_four
+  176:
+  177:						; day as extra feature
+  178:	  013F	90 02 6B			MOV DPTR, #day
+  179:	  0142	75 41 C2			mov 41h,#0c2H
+  180:	  0145	75 40 03			mov 40h,#3
+  181:	  0148	E5 41		l1:		MOV A, 41h
+  182:	  014A	85 32 82			mov dpl,32h
+  183:	  014D	51 08				ACALL 	COMMAND
+  184:	  014F	51 39				ACALL 	DELAY
+  185:	  0151	E4				CLR 	A
+  186:	  0152	93				MOVC 	A,@A+DPTR
+  187:	  0153	85 82 32			mov 32h,dpl
+  188:	  0156	05 32				inc 32h
+  189:	  0158	60 0E				jz dayFINISH
+  190:	  015A	12 02 18			LCALL 	DISPLAY
+  191:	  015D	12 02 39			LCALL 	DELAY
+  192:	  0160	05 41				inc 41h
+  193:	  0162	D5 40 E3			djnz 40h,l1
+  194:
+  195:	  0165	02 01 10			ljmp start
+  196:	  0168			dayFINISH:
+  197:	  0168	85 43 32			mov 32h,43h
+  198:	  016B	80 DB				sjmp l1
+  199:
+  200:	  016D			check_four:
+  201:	  016D	C2 A0				clr p2.0
+  202:	  016F	12 02 42			lcall DELAYsec
+  203:	  0172	D2 A0				setb p2.0
+  204:	  0174	E5 31				mov a,31h
+  205:	  0176	12 02 18			LCALL 	DISPLAY
+  206:	  0179	12 02 39			LCALL 	DELAY
+  207:	  017C	80 03				sjmp a1
+  208:	  017E	02 02 01	FINISH_12:	ljmp FINISH_1
+  209:	  0181			a1:
+  210:				;		min loop start
+  211:
+
+ASEM-51 V1.3                                         Copyright (c) 2002 by W.W. Heinz                                         PAGE 5
+
+
+
+ Line  I  Addr  Code            Source
+
+  212:	  0181	90 02 55	min1:		mov dptr, #MSG_2
+  213:	  0184	74 85				MOV A, #085H
+  214:	  0186	51 08				ACALL 	COMMAND
+  215:	  0188	51 39				ACALL 	DELAY
+  216:	  018A	E4				CLR 	A
+  217:	  018B	EA				mov a,r2
+  218:	  018C	93				MOVC 	A,@A+DPTR
+  219:	  018D	B4 36 02			cjne a,#36h,check_six
+  220:	  0190	80 64				sjmp minend
+  221:	  0192	F5 F0		check_six:	mov b,a
+  222:						;mov r2,dpl
+  223:	  0194	12 02 18			LCALL 	DISPLAY
+  224:	  0197	12 02 39			LCALL 	DELAY
+  225:
+  226:	  019A	80 03				sjmp a2
+  227:	  019C	02 01 FC	FINISH_21:	ljmp FINISH_2
+  228:	  019F			a2:
+  229:
+  230:
+  231:	  019F	0A		secend:		inc r2
+  232:
+  233:	  01A0	90 02 55	min2:		mov dptr, #MSG_2
+  234:	  01A3	74 86				MOV A, #086H
+  235:	  01A5	51 08				ACALL 	COMMAND
+  236:	  01A7	51 39				ACALL 	DELAY
+  237:	  01A9	E4				CLR 	A
+  238:	  01AA	EB				mov a,r3
+  239:	  01AB	93				MOVC 	A,@A+DPTR
+  240:						;mov r3,dpl
+  241:	  01AC	60 43				jz minFINISH_3
+  242:
+  243:	  01AE	12 02 18			LCALL 	DISPLAY
+  244:	  01B1	12 02 39			LCALL 	DELAY
+  245:
+  246:
+  247:				;		second loop start
+  248:
+  249:	  01B4	90 02 60	sec1:		mov dptr, #MSG_3
+  250:	  01B7	74 88				MOV A, #088H
+  251:	  01B9	51 08				ACALL 	COMMAND
+  252:	  01BB	51 39				ACALL 	DELAY
+  253:	  01BD	E4				CLR 	A
+  254:	  01BE	EE				mov a,r6
+  255:	  01BF	93				MOVC 	A,@A+DPTR
+  256:	  01C0	B4 36 02			cjne a,#36h,check_six_sec
+  257:	  01C3	80 26				sjmp second
+  258:	  01C5	F5 F0		check_six_sec:	mov b,a
+  259:						;mov r6,dpl
+  260:	  01C7	12 02 18			LCALL 	DISPLAY
+  261:	  01CA	12 02 39			LCALL 	DELAY
+  262:	  01CD	0E				inc r6
+  263:
+  264:	  01CE	90 02 60	sec2:		mov dptr, #MSG_3
+  265:	  01D1	74 89				MOV A, #089H
+  266:	  01D3	51 08				ACALL 	COMMAND
+  267:	  01D5	51 39				ACALL 	DELAY
+
+ASEM-51 V1.3                                         Copyright (c) 2002 by W.W. Heinz                                         PAGE 6
+
+
+
+ Line  I  Addr  Code            Source
+
+  268:	  01D7	E4				CLR 	A
+  269:	  01D8	EF				mov a,r7
+  270:	  01D9	93				MOVC 	A,@A+DPTR
+  271:						;mov r7,dpl
+  272:	  01DA	60 0A				jz secFINISH_3
+  273:
+  274:	  01DC	12 02 18			LCALL 	DISPLAY
+  275:	  01DF	12 02 42			LCALL 	DELAYsec	;call another delay here like delaysec and calculate this de
+				lay to make it 1 sec... and primary code will be done
+  276:	  01E2	0F				inc r7
+  277:						;mov dpl,r7
+  278:	  01E3	02 01 CE			ljmp sec2
+  279:	  01E6			secFINISH_3:
+  280:	  01E6	7F 00				mov r7, #0h
+  281:						;mov dpl,r6
+  282:	  01E8	02 01 B4			ljmp sec1
+  283:
+  284:	  01EB			second:		;sec END
+  285:	  01EB	7E 00				mov r6,#0h
+  286:	  01ED	0B				inc r3
+  287:						;mov dpl,r3
+  288:	  01EE	02 01 A0			ljmp min2
+  289:	  01F1			minFINISH_3:
+  290:	  01F1	7B 00				mov r3,#0h
+  291:						;mov dpl,r2
+  292:	  01F3	02 01 81			ljmp min1
+  293:
+  294:						;min END
+  295:	  01F6			minend:
+  296:	  01F6	7A 00				mov r2,#0h
+  297:	  01F8	09				inc r1
+  298:						;mov dpl,r1
+  299:	  01F9	02 01 27			ljmp LOOP_2
+  300:
+  301:
+  302:	  01FC			FINISH_2:
+  303:	  01FC	79 00				mov r1,#0h
+  304:						;mov dpl,r0
+  305:	  01FE	02 01 10			ljmp LOOP_1
+  306:	  0201			FINISH_1:
+  307:	  0201	79 00				mov r1,#0h
+  308:	  0203	78 00				mov r0, #0h
+  309:	  0205	02 01 10			ljmp start
+  310:
+  311:
+  312:	  0208			COMMAND:
+  313:	  0208	12 02 29			LCALL READY
+  314:	  020B	F5 80		 		MOV P0,A
+  315:	  020D	C2 A5				CLR RS
+  316:	  020F	C2 A6				CLR RW
+  317:	  0211	D2 A7				SETB ENBL
+  318:	  0213	51 39				ACALL DELAY
+  319:	  0215	C2 A7				CLR ENBL
+  320:	  0217	22				RET
+  321:	  0218			DISPLAY:
+  322:	  0218	12 02 29			LCALL 	READY
+
+ASEM-51 V1.3                                         Copyright (c) 2002 by W.W. Heinz                                         PAGE 7
+
+
+
+ Line  I  Addr  Code            Source
+
+  323:	  021B	F5 80				MOV P0, A
+  324:	  021D	D2 A5				SETB 	RS
+  325:	  021F	C2 A6			  	CLR 	RW
+  326:	  0221	D2 A7				SETB 	ENBL
+  327:	  0223	12 02 39			LCALL 	DELAY
+  328:	  0226	C2 A7			  	CLR 	ENBL
+  329:	  0228	22				RET
+  330:
+  331:	  0229			READY:
+  332:	  0229	D2 87				SETB 	P0.7
+  333:	  022B	C2 A5		 		CLR 	RS
+  334:	  022D	D2 A6		  		SETB 	RW
+  335:	  022F			WAIT:
+  336:	  022F	C2 A7				CLR 	ENBL
+  337:	  0231	51 39				ACALL 	DELAY
+  338:	  0233	D2 A7		  		SETB 	ENBL
+  339:	  0235	20 87 F7			JB 	P0.7, WAIT
+  340:	  0238	22		   		RET
+  341:	  0239			DELAY:
+  342:	  0239	7D 32				MOV 	R5, #50
+  343:	  023B			AGAIN_21:
+  344:	  023B	7C 64				MOV 	R4, #100
+  345:	  023D			AGAIN11:
+  346:	  023D	DC FE				DJNZ 	R4, AGAIN11
+  347:	  023F	DD FA				DJNZ R5, AGAIN_21
+  348:	  0241	22				RET
+  349:
+  350:	  0242			DELAYsec:
+  351:	  0242	75 45 0A			mov 45h, #10
+  352:	  0245			AGAIN_3:
+  353:	  0245	7D C8				MOV 	R5, #200
+  354:	  0247			AGAIN_2:
+  355:	  0247	7C DC				MOV 	R4, #220
+  356:	  0249			AGAIN:
+  357:	  0249	DC FE				DJNZ 	R4, AGAIN
+  358:	  024B	DD FA				DJNZ R5, AGAIN_2
+  359:	  024D	D5 45 F5			djnz 45h,AGAIN_3
+  360:	  0250	22				RET
+  361:
+  362:	  0251			MSG_1:
+  363:	  0251	30 31 32 00			DB "012",0
+  364:
+  365:	  0255			MSG_2:
+  366:	  0255	30 31 32 33			DB "0123456789",0
+	  0259	34 35 36 37
+	  025D	38 39 00
+  367:
+  368:	  0260			MSG_3:
+  369:	  0260	30 31 32 33			DB "0123456789",0
+	  0264	34 35 36 37
+	  0268	38 39 00
+  370:	  026B			day:
+  371:	  026B	74 68 75 66			DB 'thufrisatsunmontuewed',0
+	  026F	72 69 73 61
+	  0273	74 73 75 6E
+	  0277	6D 6F 6E 74
+
+ASEM-51 V1.3                                         Copyright (c) 2002 by W.W. Heinz                                         PAGE 8
+
+
+
+ Line  I  Addr  Code            Source
+
+	  027B	75 65 77 65
+	  027F	64 00
+  372:
+  373:	  0281	07 08 09 49	KCODE3: DB 7,8,9,'I' ;ROWnumber 0
+  374:	  0285	04 05 06 55	KCODE1: DB 4,5,6,'U' ;ROWnumber 1
+  375:	  0289	01 02 03 54	KCODE0: DB 1,2,3,'T' ;ROWnumber 2
+  376:	  028D	99 00 3D 2B	KCODE2: DB 99H,0,'=','+' ;ROWnumber 3
+  377:
+  378:						END
+
+
+
+
+
+                     register banks used:  ---
+
+                     no errors
+
+
+
+
+ASEM-51 V1.3                                         Copyright (c) 2002 by W.W. Heinz                                         PAGE 9
+
+
+
+
+
+	       L I S T   O F   S Y M B O L S
+	       =============================
+
+
+SYMBOL				  TYPE     VALUE	LINE
+------------------------------------------------------------
+??ASEM_51			  NUMBER    8051
+??VERSION			  NUMBER    0130
+A1				  CODE	    0181	 209
+A2				  CODE	    019F	 228
+AC				  BIT	      D6
+ACC				  DATA	      E0
+AGAIN				  CODE	    0249	 356
+AGAIN11				  CODE	    023D	 345
+AGAIN_2				  CODE	    0247	 354
+AGAIN_21			  CODE	    023B	 343
+AGAIN_3				  CODE	    0245	 352
+B				  DATA	      F0
+CHECK_FOUR			  CODE	    016D	 200
+CHECK_SIX			  CODE	    0192	 221
+CHECK_SIX_SEC			  CODE	    01C5	 258
+COMMAND				  CODE	    0208	 312
+CY				  BIT	      D7
+DAY				  CODE	    026B	 370
+DAYFINISH			  CODE	    0168	 196
+DELAY				  CODE	    0239	 341
+DELAYSEC			  CODE	    0242	 350
+DISPLAY				  CODE	    0218	 321
+DPH				  DATA	      83
+DPL				  DATA	      82
+EA				  BIT	      AF
+ENBL				  NUMBER    00A7	   6
+ES				  BIT	      AC
+ET0				  BIT	      A9
+ET1				  BIT	      AB
+EX0				  BIT	      A8
+EX1				  BIT	      AA
+EXTI0				  CODE	    0003
+EXTI1				  CODE	    0013
+F0				  BIT	      D5
+FIND				  CODE	    0092	  74
+FINISH_1			  CODE	    0201	 306
+FINISH_12			  CODE	    017E	 208
+FINISH_2			  CODE	    01FC	 302
+FINISH_21			  CODE	    019C	 227
+IE				  DATA	      A8
+IE0				  BIT	      89
+IE1				  BIT	      8B
+INT0				  BIT	      B2
+INT1				  BIT	      B3
+IP				  DATA	      B8
+IT0				  BIT	      88
+IT1				  BIT	      8A
+K1				  CODE	    0038	  31
+K2				  CODE	    0042	  36
+KCODE0				  CODE	    0289	 375
+
+ASEM-51 V1.3                                        Copyright (c) 2002 by W.W. Heinz                                         PAGE 10
+
+
+
+SYMBOL				  TYPE     VALUE	LINE
+------------------------------------------------------------
+KCODE1				  CODE	    0285	 374
+KCODE2				  CODE	    028D	 376
+KCODE3				  CODE	    0281	 373
+KEYBOARD			  CODE	    0034	  28
+L1				  CODE	    0148	 181
+L12				  CODE	    00F3	 130
+LOOP_1				  CODE	    0110	 145
+LOOP_2				  CODE	    0127	 163
+MATCH				  CODE	    0098	  79
+MIN1				  CODE	    0181	 212
+MIN2				  CODE	    01A0	 233
+MINEND				  CODE	    01F6	 295
+MINFINISH_3			  CODE	    01F1	 289
+MSG_1				  CODE	    0251	 362
+MSG_2				  CODE	    0255	 365
+MSG_3				  CODE	    0260	 368
+ON_AC				  CODE	    00A3	  86
+OV				  BIT	      D2
+OVER				  CODE	    004D	  42
+OVER1				  CODE	    0058	  48
+P				  BIT	      D0
+P0				  DATA	      80
+P1				  DATA	      90
+P2				  DATA	      A0
+P3				  DATA	      B0
+PCON				  DATA	      87
+PS				  BIT	      BC
+PSW				  DATA	      D0
+PT0				  BIT	      B9
+PT1				  BIT	      BB
+PX0				  BIT	      B8
+PX1				  BIT	      BA
+RB8				  BIT	      9A
+RD				  BIT	      B7
+READY				  CODE	    0229	 331
+REN				  BIT	      9C
+RESET				  CODE	    0000
+RI				  BIT	      98
+ROW_0				  CODE	    0080	  66
+ROW_1				  CODE	    0085	  68
+ROW_2				  CODE	    008A	  70
+ROW_3				  CODE	    008F	  72
+RS				  NUMBER    00A5	   4
+RS0				  BIT	      D3
+RS1				  BIT	      D4
+RW				  NUMBER    00A6	   5
+RXD				  BIT	      B0
+SBUF				  DATA	      99
+SCON				  DATA	      98
+SEC1				  CODE	    01B4	 249
+SEC2				  CODE	    01CE	 264
+SECEND				  CODE	    019F	 231
+SECFINISH_3			  CODE	    01E6	 279
+SECOND				  CODE	    01EB	 284
+SINT				  CODE	    0023
+SM0				  BIT	      9F
+
+ASEM-51 V1.3                                        Copyright (c) 2002 by W.W. Heinz                                         PAGE 11
+
+
+
+SYMBOL				  TYPE     VALUE	LINE
+------------------------------------------------------------
+SM1				  BIT	      9E
+SM2				  BIT	      9D
+SP				  DATA	      81
+START				  CODE	    0110	 144
+T0				  BIT	      B4
+T1				  BIT	      B5
+TB8				  BIT	      9B
+TCON				  DATA	      88
+TF0				  BIT	      8D
+TF1				  BIT	      8F
+TH0				  DATA	      8C
+TH1				  DATA	      8D
+TI				  BIT	      99
+TIMER0				  CODE	    000B
+TIMER1				  CODE	    001B
+TL0				  DATA	      8A
+TL1				  DATA	      8B
+TMOD				  DATA	      89
+TR0				  BIT	      8C
+TR1				  BIT	      8E
+TXD				  BIT	      B1
+WAIT				  CODE	    022F	 335
+WR				  BIT	      B6
