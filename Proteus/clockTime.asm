@@ -102,7 +102,7 @@ mov r7,55h	;s0
 mov r4,#0h
 mov r5,#0h
 mov 32h,#0h
-setb p2.0
+setb p1.0
 		
 			
 		MOV A, #084H
@@ -198,9 +198,9 @@ dayFINISH:
 		sjmp l1
 		
 check_four:	
-		clr p2.0	;buzzer will rang for p2.0 as active low
+		clr p1.0	;buzzer will rang for p2.0 as active low
 		lcall DELAYsec
-		setb p2.0	;stop buzzer for high
+		setb p1.0	;stop buzzer for high
 		mov a,31h
 		LCALL 	DISPLAY
 		LCALL 	DELAY

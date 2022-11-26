@@ -10,9 +10,9 @@ ASEM-51 V1.3                                         Copyright (c) 2002 by W.W. 
 
 
 
-	Source File:	C:\AK Nahin\Academic Resources\24 hour clock with assembly language for 8052\Exam1\Proteus\clockTime.asm
-	Object File:	C:\AK Nahin\Academic Resources\24 hour clock with assembly language for 8052\Exam1\Proteus\clockTime.hex
-	List File:	C:\AK Nahin\Academic Resources\24 hour clock with assembly language for 8052\Exam1\Proteus\clockTime.lst
+	Source File:	D:\Academic\7th Semester\EEE 4706\24 hour clock with assembly language for 8052\Proteus\clockTime.asm
+	Object File:	D:\Academic\7th Semester\EEE 4706\24 hour clock with assembly language for 8052\Proteus\clockTime.hex
+	List File:	D:\Academic\7th Semester\EEE 4706\24 hour clock with assembly language for 8052\Proteus\clockTime.lst
 
 
 
@@ -111,13 +111,13 @@ ASEM-51 V1.3                                         Copyright (c) 2002 by W.W. 
    84:	  00A1	51 39			ACALL DELAY
    85:					;LJMP K1
    86:	  00A3			ON_AC:
-   87:	  00A3	F6			mov @r0,a
-   88:	  00A4	24 30			add a,#30h
+   87:	  00A3	F6			mov @r0,a	;stores keyboard input ar location of @r0 like 50,51...
+   88:	  00A4	24 30			add a,#30h	;shows ascii
    89:	  00A6	51 18			ACALL DISPLAY
-   90:	  00A8	51 39			ACALL DELAY
+   90:	  00A8	51 39			ACALL DELAY	;display keyboard input
    91:
    92:	  00AA	08			inc r0
-   93:	  00AB	B8 56 86		cjne r0, #56h, keyboard
+   93:	  00AB	B8 56 86		cjne r0, #56h, keyboard	;check if 6 input is taken
    94:					;LJMP K1
    95:	  00AE	A8 50		mov r0,50h	;h1
    96:	  00B0	A9 51		mov r1,51h	;h0
@@ -136,14 +136,14 @@ ASEM-51 V1.3                                         Copyright (c) 2002 by W.W. 
   102:	  00BA	7C 00		mov r4,#0h
   103:	  00BC	7D 00		mov r5,#0h
   104:	  00BE	75 32 00	mov 32h,#0h
-  105:	  00C1	D2 A0		setb p2.0
+  105:	  00C1	D2 90		setb p1.0
   106:
   107:
   108:	  00C3	74 84				MOV A, #084H
   109:	  00C5	51 08				ACALL 	COMMAND
   110:	  00C7	51 39				ACALL 	DELAY
   111:	  00C9	E4				CLR 	A
-  112:	  00CA	74 3A				MOV	A,#3ah
+  112:	  00CA	74 3A				MOV	A,#3ah	;print colon : at position 84h
   113:	  00CC	12 02 18			LCALL 	DISPLAY
   114:	  00CF	12 02 39			LCALL 	DELAY
   115:
@@ -151,7 +151,7 @@ ASEM-51 V1.3                                         Copyright (c) 2002 by W.W. 
   117:	  00D4	51 08				ACALL 	COMMAND
   118:	  00D6	51 39				ACALL 	DELAY
   119:	  00D8	E4				CLR 	A
-  120:	  00D9	74 3A				MOV	A,#3ah
+  120:	  00D9	74 3A				MOV	A,#3ah	;print colon : at position 84h
   121:	  00DB	12 02 18			LCALL 	DISPLAY
   122:	  00DE	12 02 39			LCALL 	DELAY
   123:	  00E1	90 02 6B			MOV DPTR, #day
@@ -217,8 +217,8 @@ ASEM-51 V1.3                                         Copyright (c) 2002 by W.W. 
   176:
   177:						; day as extra feature
   178:	  013F	90 02 6B			MOV DPTR, #day
-  179:	  0142	75 41 C2			mov 41h,#0c2H
-  180:	  0145	75 40 03			mov 40h,#3
+  179:	  0142	75 41 C2			mov 41h,#0c2H	;cursor goes to line 2 of 16x2 lcd
+  180:	  0145	75 40 03			mov 40h,#3	;print 3 character of the day
   181:	  0148	E5 41		l1:		MOV A, 41h
   182:	  014A	85 32 82			mov dpl,32h
   183:	  014D	51 08				ACALL 	COMMAND
@@ -228,7 +228,7 @@ ASEM-51 V1.3                                         Copyright (c) 2002 by W.W. 
   187:	  0153	85 82 32			mov 32h,dpl
   188:	  0156	05 32				inc 32h
   189:	  0158	60 0E				jz dayFINISH
-  190:	  015A	12 02 18			LCALL 	DISPLAY
+  190:	  015A	12 02 18			LCALL 	DISPLAY		;display day
   191:	  015D	12 02 39			LCALL 	DELAY
   192:	  0160	05 41				inc 41h
   193:	  0162	D5 40 E3			djnz 40h,l1
@@ -239,9 +239,9 @@ ASEM-51 V1.3                                         Copyright (c) 2002 by W.W. 
   198:	  016B	80 DB				sjmp l1
   199:
   200:	  016D			check_four:
-  201:	  016D	C2 A0				clr p2.0
+  201:	  016D	C2 90				clr p1.0	;buzzer will rang for p2.0 as active low
   202:	  016F	12 02 42			lcall DELAYsec
-  203:	  0172	D2 A0				setb p2.0
+  203:	  0172	D2 90				setb p1.0	;stop buzzer for high
   204:	  0174	E5 31				mov a,31h
   205:	  0176	12 02 18			LCALL 	DISPLAY
   206:	  0179	12 02 39			LCALL 	DELAY
@@ -301,7 +301,7 @@ ASEM-51 V1.3                                         Copyright (c) 2002 by W.W. 
   253:	  01BD	E4				CLR 	A
   254:	  01BE	EE				mov a,r6
   255:	  01BF	93				MOVC 	A,@A+DPTR
-  256:	  01C0	B4 36 02			cjne a,#36h,check_six_sec
+  256:	  01C0	B4 36 02			cjne a,#36h,check_six_sec	;check second end s = 60s
   257:	  01C3	80 26				sjmp second
   258:	  01C5	F5 F0		check_six_sec:	mov b,a
   259:						;mov r6,dpl
