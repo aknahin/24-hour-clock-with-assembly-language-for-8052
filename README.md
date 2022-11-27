@@ -1,5 +1,5 @@
 
-# 24-hour-clock-with-assembly-language-for-8052
+# Digital clock with 8051(89s51,89s52) microcontroller 16×2 lcd and 4×4 numeric keypad
 Here is a simple project on how to make a digital clock with 8051(89c51,89s52) microcontroller. The clock is efficient and their is no difference in time even in milli seconds. You can verify it with the digital clock you have. In the project i utilized the 8051 microcontroller internal clock source to produce a delay exactly equal to 1 second. This delay is then used to build a efficient clock with 89s52 microcontroller. Usually digital RTC(real time clocks) are interfaced with microcontrollers to make a digital clock. But i utilized the internal timers of 89s52 microcontroller to generate a precise time for making a clock with 8051 microcontroller. 16×2 lcd is interfaced with 8051 microcontroller to display time on lcd. Time in minutes, hours and seconds will be displayed on 16×2 lcd. 4×4 numeric keypad is also part of the 8051 digital clock project. It is used to set time, user manually enters the hours, minutes and seconds by pressing the buttons of 4×4 numeric keypad. Buttons represents numbers on keypad.
 
 **Programing language:** Assembly  
